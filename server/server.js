@@ -2,12 +2,9 @@
 
 const express = require('express');
 const sqlite3 = require('sqlite3');
+
 const winston = require('winston');
 const morgan = require('morgan');
-const crypto = require('crypto');
-
-const bodyParser = require('body-parser');
-var jsonParser = bodyParser.json();
 
 const logFormat = winston.format.printf(info => {
     return info.timestamp +  " [" + info.level + "]: " + info.message;
@@ -26,6 +23,11 @@ const logger = winston.createLogger({
     ]
 });
 
+const crypto = require('crypto');
+
+const bodyParser = require('body-parser');
+var jsonParser = bodyParser.json();
+
 const server = express();
 server.use(morgan('dev'));
 
@@ -39,55 +41,6 @@ const db = new sqlite3.Database('./db/crypto-ts-db.db', sqlite3.OPEN_READWRITE, 
         logger.info("Successfully connected to database.");
     }
 })
-
-// db.all("SELECT name FROM sqlite_master WHERE type='table';", (err, rows) => {
-//     if (err) {
-//         logger.error(err.message);
-//     } else {
-//         rows.forEach((row) => {
-//             logger.info(row);
-//         });
-//     }
-// })
-
-// var username = "UserA";
-// var password = "password";
-// var salt = crypto.randomBytes(8).toString('hex');
-
-// var hash = crypto.createHash('sha256');
-
-// hash.update(password + salt);
-
-// var hashedPassword = hash.digest('hex');
-
-// logger.info(username);
-// logger.info(password);
-// logger.info(salt);
-// logger.info(password+salt);
-// logger.info(hashedPassword);
-
-// db.run('INSERT INTO Users VALUES (?, ?, ?)', [username, hashedPassword, salt], function (err) {
-//     if (err) {
-//         logger.error(err.message);
-//     } else {
-//         logger.info('Added new user to User table row ' + this.lastID);
-//     }
-// })
-
-// db.close((err) => {
-//     if (err) {
-//         logger.error("Unable to close the database file:");
-//         logger.error(err.message);
-//     } else {
-//         logger.info('Close the database connection.');
-//     }
-// });
-
-
-server.post('/', jsonParser, (req, res) => {
-
-    res.send(req.body)
-});
 
 /**
  * Register a new user
@@ -169,3 +122,12 @@ server.post('/login', jsonParser, (req, res) => {
 });
 
 server.listen(3001, () => logger.info('Example app listening on port 3001!'));
+
+// db.close((err) => {
+//     if (err) {
+//         logger.error("Unable to close the database file:");
+//         logger.error(err.message);
+//     } else {
+//         logger.info('Close the database connection.');
+//     }
+// });
