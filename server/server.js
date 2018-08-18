@@ -3,11 +3,11 @@
 const express = require('express');
 const sqlite3 = require('sqlite3');
 const winston = require('winston');
+const morgan = require('morgan');
 const crypto = require('crypto');
 
 const bodyParser = require('body-parser');
 var jsonParser = bodyParser.json();
-
 
 const logFormat = winston.format.printf(info => {
     return info.timestamp +  " [" + info.level + "]: " + info.message;
@@ -27,6 +27,7 @@ const logger = winston.createLogger({
 });
 
 const server = express();
+server.use(morgan('dev'));
 
 // server.use(bodyParser.json());
 
@@ -85,7 +86,7 @@ const server = express();
 
 
 server.post('/', jsonParser, (req, res) => {
-    console.log(req.body);
+    // console.log(req.body);
     res.send(req.body)
 });
 
