@@ -29,17 +29,16 @@ const logger = winston.createLogger({
 const server = express();
 server.use(morgan('dev'));
 
-// server.use(bodyParser.json());
 
 // Currently only open the DB if it exists, don't attempt to create it.
-// const db = new sqlite3.Database('./db/crypto-ts-db.db', sqlite3.OPEN_READWRITE, (err) => {
-//     if (err) {
-//         logger.error("Unable to find the database file:");
-//         logger.error(err.message);
-//     } else {
-//         logger.info("Successfully connected to database.");
-//     }
-// })
+const db = new sqlite3.Database('./db/crypto-ts-db.db', sqlite3.OPEN_READWRITE, (err) => {
+    if (err) {
+        logger.error("Unable to find the database file:");
+        logger.error(err.message);
+    } else {
+        logger.info("Successfully connected to database.");
+    }
+})
 
 // db.all("SELECT name FROM sqlite_master WHERE type='table';", (err, rows) => {
 //     if (err) {
@@ -86,8 +85,42 @@ server.use(morgan('dev'));
 
 
 server.post('/', jsonParser, (req, res) => {
-    // console.log(req.body);
+
     res.send(req.body)
+});
+
+/**
+ * Register a new user
+ * Request Body:
+ *  Content-Type: application/json
+ *  Required Fields: {username, password}
+ * Response:
+ *  201 - New user added
+ *  400 - Missing username/password in request body
+ *  409 - Username already in use
+ */
+server.post('/register', jsonParser, (req, res) => {
+    // If the request is missing either the username or password, send 400
+    if (!req.body.username || !req.body.password) { 
+        res.status(400).send("Missing Username/Password");
+    } else {
+        var salt = crypto.randomBytes(8).toString('hex');
+        var hash = crypto.createHash('sha256');
+        hash.update(req.body.password + salt);
+        var hashedPassword = hash.digest('hex');
+
+        logger.info("Attempting to add new user " + req.body.username);
+
+        db.run('INSERT INTO Users VALUES (?, ?, ?)', [req.body.username, hashedPassword, salt], function (err) {
+            if (err) {
+                logger.error(err.message);
+                res.status(409).send("Username already in use");
+            } else {
+                logger.info('Added new user to User table row ' + this.lastID);
+                res.status(201).send("New user successfully registered");
+            }
+        })
+    }
 });
 
 server.listen(3001, () => logger.info('Example app listening on port 3001!'));
