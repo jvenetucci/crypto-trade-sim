@@ -1,0 +1,14 @@
+{
+  "name": "crypto-ts-server",
+  "version": "0.1.0",
+  "description": "Server for Crypto Trade Sim",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "Joseph Venetucci",
+  "license": "None",
+  "dependencies": {
+    "express": "^4.16.3"
+  }
+}
