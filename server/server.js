@@ -123,4 +123,49 @@ server.post('/register', jsonParser, (req, res) => {
     }
 });
 
+/**
+ * Login a user
+ * Request Body:
+ *  Content-Type: application/json
+ *  Required Fields: {username, password}
+ * Response:
+ *  200 - Good login
+ *  400 - Missing username/password in request body
+ *  401 - Username not found or invalid username/password
+ *  500 - Something went wrong with the DB
+ */
+server.post('/login', jsonParser, (req, res) => {
+    // If the request is missing either the username or password, send 400
+    if (!req.body.username || !req.body.password) { 
+        res.status(400).send("Missing Username/Password");
+    } else {
+        logger.info("Attempting to login user " + req.body.username);
+
+        db.get('SELECT * FROM Users WHERE username = ?', [req.body.username], function (err, row) {
+            if (err) {
+                logger.error(err.message);
+                res.status(500).send("Something happened to the DB, check server logs...");
+            } else {
+                if (row) {
+                    var hash = crypto.createHash('sha256');
+                    hash.update(req.body.password + row.salt);
+                    var hashedPassword = hash.digest('hex');
+                    if (row.password_hash !== hashedPassword) {
+                        // Invalid Password
+                        logger.info("\t" + req.body.password + " is incorect password.");
+                        res.status(401).send("Invalid username/password"); 
+                    } else {
+                        logger.info("\t" + req.body.username + " is logged in");
+                        res.status(200).send("Log in successful");
+                    }
+                } else {
+                    // User does not exist
+                    logger.info("\t" + req.body.username + " does not exist.");
+                    res.status(401).send("Invalid username/password");
+                }
+            }
+        })
+    }
+});
+
 server.listen(3001, () => logger.info('Example app listening on port 3001!'));
