@@ -9,6 +9,7 @@
   "author": "Joseph Venetucci",
   "license": "None",
   "dependencies": {
-    "express": "^4.16.3"
+    "express": "^4.16.3",
+    "sqlite3": "^4.0.2"
   }
 }
