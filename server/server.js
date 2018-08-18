@@ -47,13 +47,15 @@ const db = new sqlite3.Database('./db/crypto-ts-db.db', sqlite3.OPEN_READWRITE, 
  * Request Body:
  *  Content-Type: application/json
  *  Required Fields: {username, password}
+ *  Optional Fields: {startingAmount}
  * Response:
  *  201 - New user added
  *  400 - Missing username/password in request body
  *  409 - Username already in use
+ *  500 - DB problem in trying to set the users starting amount
  */
 server.post('/register', jsonParser, (req, res) => {
-    // If the request is missing either the username or password, send 400
+    // If the request is missing the required params, send 400
     if (!req.body.username || !req.body.password) { 
         res.status(400).send("Missing Username/Password");
     } else {
@@ -69,8 +71,17 @@ server.post('/register', jsonParser, (req, res) => {
                 logger.error(err.message);
                 res.status(409).send("Username already in use");
             } else {
-                logger.info('Added new user to User table row ' + this.lastID);
-                res.status(201).send("New user successfully registered");
+                logger.info('\tAdded new user to User table row ' + this.lastID);
+                let startAmount = req.body.startingAmount || 50000;
+                db.run('INSERT INTO Holdings VALUES (?, ?, ?)', [req.body.username, "USD", startAmount], function (err) {
+                    if (err) {
+                        logger.error(err.message);
+                        res.status(500).send("Something happened to the DB, check server logs...");
+                    } else {
+                        logger.info("\tInitialized " + req.body.username + " with " + startAmount + " USD");
+                        res.status(201).send("New user successfully registered");
+                    }
+                })
             }
         })
     }
