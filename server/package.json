@@ -9,11 +9,12 @@
   "author": "Joseph Venetucci",
   "license": "MIT",
   "repository": {
-    "type" : "git",
+    "type": "git",
     "url": "https://github.com/jvenetucci/crypto-trade-sim"
   },
   "dependencies": {
     "express": "^4.16.3",
-    "sqlite3": "^4.0.2"
+    "sqlite3": "^4.0.2",
+    "winston": "^3.0.0"
   }
 }
