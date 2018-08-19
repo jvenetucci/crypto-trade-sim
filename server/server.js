@@ -157,7 +157,6 @@ server.post('/buy', jsonParser, (req, res) => {
                 res.status(500).send("Something happened to the DB, check server logs...");
             } else {
                 if (row) {
-                    console.log(row);
                     if (row.quantity < req.body.price) {
                         // Not enough funds
                         logger.info("\t" + "Buy amount is " + req.body.price + " but user only has " + row.quantity);
@@ -214,7 +213,6 @@ server.post('/buy', jsonParser, (req, res) => {
         })
     }
 });
-
 
 /**
  * Retrieve an array of a users current holdings with current values. Will send an empty array if the user does not exist.
