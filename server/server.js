@@ -1,8 +1,12 @@
 // Joseph Venetucci
 
 const express = require('express');
+const session = require('express-session');
+const bodyParser = require('body-parser');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const crypto = require('crypto');
 const sqlite3 = require('sqlite3');
-
 const morgan = require('morgan');
 const winston = require('winston');
 
@@ -23,14 +27,65 @@ const logger = winston.createLogger({
     ]
 });
 
-const crypto = require('crypto');
+// Authenticate a user using Passport
+passport.use(new LocalStrategy(
+    function(username, password, done) {
+        logger.info("Attempting to login user " + username);
+        db.get('SELECT * FROM Users WHERE username = ?', [username], function (err, row) {
+            if (err) {
+                logger.error(err.message);
+                return done(err);
+            } else {
+                if (row) {
+                    var hash = crypto.createHash('sha256');
+                    hash.update(password + row.salt);
+                    var hashedPassword = hash.digest('hex');
+                    if (row.password_hash !== hashedPassword) {
+                        logger.info("\t" + password + " is incorect password.");
+                        return done(null, false, {message: "Invalid username/password"});
+                    } else {
+                        logger.info("\t" + username + " is logged in");
+                        return done(null, username);
+                    }
+                } else {
+                    logger.info("\t" + username + " does not exist.");
+                    return done(null, false, {message: "Invalid username/password"});
+                }
+            }
+        })
+    }
+))
 
-const bodyParser = require('body-parser');
-var jsonParser = bodyParser.json();
+// Since using memory store, this is a basic serialize
+passport.serializeUser(function(user, done) {
+    done(null, user);
+});
+
+// Since using memory store, this is a basic deserialize
+passport.deserializeUser(function(id, done) {
+    done(null, id);
+});
+
+// This is a basic middleware function that checks if the user field has been set in request.
+// This will get set if the user goes through the login endpoint with correct credentials.
+function isUserLoggedIn(req, res, next) {
+    if (req.user) {
+        next();
+    } else {
+        res.status(401).send("You must be logged in to access this endpoint");
+    }
+}
 
 const server = express();
 server.use(morgan('dev'));
-
+server.use(bodyParser.json());
+server.use(session({
+    secret: 'crypto-ts-secrect',
+    resave: true,
+    saveUninitialized: true  
+}))
+server.use(passport.initialize());
+server.use(passport.session());
 
 // Currently only open the DB if it exists, don't attempt to create it.
 const db = new sqlite3.Database('./db/crypto-ts-db.db', sqlite3.OPEN_READWRITE, (err) => {
@@ -41,6 +96,34 @@ const db = new sqlite3.Database('./db/crypto-ts-db.db', sqlite3.OPEN_READWRITE, 
         logger.info("Successfully connected to database.");
     }
 })
+
+/**
+ * Login a user through passport and custom callback.
+ * Request Body:
+ *  Content-Type: application/json
+ *  Required Fields: {username, password}
+ * Response:
+ *  200 - Good login
+ *  401 - Bad login information
+ *  500 - DB or session error - See logs
+ */
+server.post('/login', (req, res, next) => {
+    passport.authenticate('local', function(err, user, info) {
+        if (err) {
+            return res.status(500).send("Something happened to the DB, check server logs...")
+        }
+        if (!user) { 
+            return res.status(401).send(info.message); 
+        } else {
+            req.logIn(user, function(err) {
+                if (err) { 
+                    res.status(500).send("Something happened, check server logs...") 
+                }
+                return res.status(200).send("Log in successful");
+            });
+        }
+    })(req, res, next)
+});
 
 /**
  * Register a new user
@@ -54,7 +137,7 @@ const db = new sqlite3.Database('./db/crypto-ts-db.db', sqlite3.OPEN_READWRITE, 
  *  409 - Username already in use
  *  500 - DB problem in trying to set the users starting amount
  */
-server.post('/register', jsonParser, (req, res) => {
+server.post('/register', (req, res) => {
     // If the request is missing the required params, send 400
     if (!req.body.username || !req.body.password) { 
         res.status(400).send("Missing Username/Password");
@@ -88,51 +171,6 @@ server.post('/register', jsonParser, (req, res) => {
 });
 
 /**
- * Login a user
- * Request Body:
- *  Content-Type: application/json
- *  Required Fields: {username, password}
- * Response:
- *  200 - Good login
- *  400 - Missing username/password in request body
- *  401 - Username not found or invalid username/password
- *  500 - Something went wrong with the DB
- */
-server.post('/login', jsonParser, (req, res) => {
-    // If the request is missing either the username or password, send 400
-    if (!req.body.username || !req.body.password) { 
-        res.status(400).send("Missing Username/Password");
-    } else {
-        logger.info("Attempting to login user " + req.body.username);
-
-        db.get('SELECT * FROM Users WHERE username = ?', [req.body.username], function (err, row) {
-            if (err) {
-                logger.error(err.message);
-                res.status(500).send("Something happened to the DB, check server logs...");
-            } else {
-                if (row) {
-                    var hash = crypto.createHash('sha256');
-                    hash.update(req.body.password + row.salt);
-                    var hashedPassword = hash.digest('hex');
-                    if (row.password_hash !== hashedPassword) {
-                        // Invalid Password
-                        logger.info("\t" + req.body.password + " is incorect password.");
-                        res.status(401).send("Invalid username/password"); 
-                    } else {
-                        logger.info("\t" + req.body.username + " is logged in");
-                        res.status(200).send("Log in successful");
-                    }
-                } else {
-                    // User does not exist
-                    logger.info("\t" + req.body.username + " does not exist.");
-                    res.status(401).send("Invalid username/password");
-                }
-            }
-        })
-    }
-});
-
-/**
  * Buy an amount of cryptocurrency for USD
  * Request Body:
  *  Content-Type: application/json
@@ -144,7 +182,8 @@ server.post('/login', jsonParser, (req, res) => {
  *  409 - Not Enough money
  *  500 - Something went wrong with the DB
  */
-server.post('/buy', jsonParser, (req, res) => {
+server.post('/buy', (req, res) => {
+    logger.info("Req.user: " + req.user);
     // If the request is missing the required params, send 400
     if (!req.body.username || !req.body.quantity || !req.body.currency || !req.body.price) { 
         res.status(400).send("Missing required fields in body");
@@ -223,7 +262,8 @@ server.post('/buy', jsonParser, (req, res) => {
  *  400 - Missing username is query string
  *  500 - Something went wrong with the DB
  */
-server.get('/holdings', (req, res) => {
+server.get('/holdings', isUserLoggedIn, (req, res) => {
+    logger.info("Req.user: " + req.user);
     if (!req.query.username) {
         res.status(400).send("Missing username parameter");
     } else {
