@@ -270,6 +270,25 @@ server.get('/holdings', isUserLoggedIn, (req, res) => {
     })
 });
 
+/**
+ * Retrieve the transaction history of a user. Will return an empty array if there are no transactions, or the user does not exist.
+ * Uses the username stored in the current session. This is a protected endpoint.
+ * Response:
+ *  200 - Found history
+ *  500 - Something went wrong with the DB
+ */
+server.get('/history', isUserLoggedIn, (req, res) => {
+    logger.info(req.user + " is asking for their transaction history");
+    db.all('SELECT * FROM Transactions WHERE username = ? ORDER BY date DESC', [req.user], (err, row) => {
+        if (err) {
+            logger.error(err.message);
+            res.status(500).send("Something happened to the DB, check server logs...");
+        } else {
+            res.json(row);
+        }
+    })
+});
+
 server.listen(3001, () => logger.info('Example app listening on port 3001!'));
 
 // db.close((err) => {
