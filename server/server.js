@@ -255,28 +255,22 @@ server.post('/buy', (req, res) => {
 
 /**
  * Retrieve an array of a users current holdings with current values. Will send an empty array if the user does not exist.
- * Query String:
- *  username - The user to get holdings for
+ * Uses the username stored in the current session. This is a protected endpoint.
  * Response:
- *  200 - Good login
- *  400 - Missing username is query string
+ *  200 - Found holdings
  *  500 - Something went wrong with the DB
  */
 server.get('/holdings', isUserLoggedIn, (req, res) => {
-    logger.info("Req.user: " + req.user);
-    if (!req.query.username) {
-        res.status(400).send("Missing username parameter");
-    } else {
-        db.all('SELECT currency, quantity FROM Holdings WHERE username = ?', [req.query.username], (err, row) => {
-            if (err) {
-                logger.error(err.message);
-                res.status(500).send("Something happened to the DB, check server logs...");
-            } else {
-                res.json(row);
-            }
-        })
-    }
-})
+    logger.info(req.user + " is asking for their current holdings");
+    db.all('SELECT currency, quantity FROM Holdings WHERE username = ?', [req.user], (err, row) => {
+        if (err) {
+            logger.error(err.message);
+            res.status(500).send("Something happened to the DB, check server logs...");
+        } else {
+            res.json(row);
+        }
+    })
+});
 
 server.listen(3001, () => logger.info('Example app listening on port 3001!'));
 
