@@ -132,6 +132,30 @@ server.post('/login', jsonParser, (req, res) => {
     }
 });
 
+/**
+ * Retrieve an array of a users current holdings with current values. Will send an empty array if the user does not exist.
+ * Query String:
+ *  username - The user to get holdings for
+ * Response:
+ *  200 - Good login
+ *  400 - Missing username is query string
+ *  500 - Something went wrong with the DB
+ */
+server.get('/holdings', (req, res) => {
+    if (!req.query.username) {
+        res.status(400).send("Missing username parameter");
+    } else {
+        db.all('SELECT currency, quantity FROM Holdings WHERE username = ?', [req.query.username], (err, row) => {
+            if (err) {
+                logger.error(err.message);
+                res.status(500).send("Something happened to the DB, check server logs...");
+            } else {
+                res.json(row);
+            }
+        })
+    }
+})
+
 server.listen(3001, () => logger.info('Example app listening on port 3001!'));
 
 // db.close((err) => {
