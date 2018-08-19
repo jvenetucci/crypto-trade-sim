@@ -72,6 +72,7 @@ function isUserLoggedIn(req, res, next) {
     if (req.user) {
         next();
     } else {
+        console.log("Unauthorized request to " +  req.route.path + " from " + req._remoteAddress);
         res.status(401).send("You must be logged in to access this endpoint");
     }
 }
@@ -171,33 +172,30 @@ server.post('/register', (req, res) => {
 });
 
 /**
- * Buy an amount of cryptocurrency for USD
+ * Buy an amount of cryptocurrency for USD. This is a protected endpoint
  * Request Body:
  *  Content-Type: application/json
- *  Required Fields: {username, currency, quantity, price}
+ *  Required Fields: {currency, quantity, price}
  * Response:
- *  200 - Good login
+ *  200 - Successful purchase
  *  400 - Missing required fields in request body
  *  404 - User or USD holdings can't be found
  *  409 - Not Enough money
  *  500 - Something went wrong with the DB
  */
-server.post('/buy', (req, res) => {
-    logger.info("Req.user: " + req.user);
-    // If the request is missing the required params, send 400
-    if (!req.body.username || !req.body.quantity || !req.body.currency || !req.body.price) { 
+server.post('/buy', isUserLoggedIn, (req, res) => {
+    if (!req.body.quantity || !req.body.currency || !req.body.price) { 
         res.status(400).send("Missing required fields in body");
     } else {
-        logger.info(req.body.username +" attempting to buy " + req.body.quantity +
+        logger.info(req.user +" is attempting to buy " + req.body.quantity +
             " " + req.body.currency + " for " + req.body.price);
-        db.get('SELECT quantity FROM Holdings WHERE username = ? AND currency = ?', [req.body.username, "USD"], function (err, row) {
+        db.get('SELECT quantity FROM Holdings WHERE username = ? AND currency = ?', [req.user, "USD"], function (err, row) {
             if (err) {
                 logger.error(err.message);
                 res.status(500).send("Something happened to the DB, check server logs...");
             } else {
                 if (row) {
                     if (row.quantity < req.body.price) {
-                        // Not enough funds
                         logger.info("\t" + "Buy amount is " + req.body.price + " but user only has " + row.quantity);
                         res.status(409).send("Not enough funds to purchase"); 
                     } else {
@@ -206,7 +204,7 @@ server.post('/buy', (req, res) => {
                         db.serialize(() => {
                             db.run('BEGIN TRANSACTION');
                             db.run('INSERT INTO Transactions VALUES (?, ?, ?, ?, ?, ?, ?)',
-                              [req.body.username, Date.now(), "BUY", req.body.currency, "USD", req.body.quantity, req.body.price], (err) => {
+                              [req.user, Date.now(), "BUY", req.body.currency, "USD", req.body.quantity, req.body.price], (err) => {
                                 if (err) {
                                     db.run('ROLLBACK');
                                     logger.error(err.message);
@@ -214,14 +212,14 @@ server.post('/buy', (req, res) => {
                                 }
                             });
                             db.run('UPDATE Holdings SET quantity = quantity + ? WHERE username = ? AND currency = ?',
-                             [req.body.quantity, req.body.username, req.body.currency], function(err) {
+                             [req.body.quantity, req.user, req.body.currency], function(err) {
                                 if (err) {
                                     db.run('ROLLBACK');
                                     logger.error(err.message);
                                     res.status(500).send("Something happened to the DB, check server logs...");
                                 } else if (this.changes == 0) {
                                     db.run('INSERT INTO Holdings VALUES (?, ?, ?)', 
-                                      [req.body.username, req.body.currency, req.body.quantity], (err) => {
+                                      [req.user, req.body.currency, req.body.quantity], (err) => {
                                         if (err) {
                                             db.run('ROLLBACK');
                                             logger.error(err.message);
@@ -231,7 +229,7 @@ server.post('/buy', (req, res) => {
                                 }
                             });
                             db.run('UPDATE Holdings SET quantity = ? WHERE username = ? AND currency = ?', 
-                              [newBalance, req.body.username, "USD"], (err) => {
+                              [newBalance, req.user, "USD"], (err) => {
                                 if (err) {
                                     db.run('ROLLBACK');
                                     logger.error(err.message);
