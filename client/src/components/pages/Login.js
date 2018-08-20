@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { Tab, Container, Grid, Header, Segment } from 'semantic-ui-react'
 import LoginWindow from "./../LoginWindow";
 import RegisterWindow from "./../RegisterWindow";

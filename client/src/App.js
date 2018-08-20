@@ -1,49 +1,47 @@
 import React, { Component } from 'react';
+import {BrowserRouter as Router, Route, Redirect, Switch} from 'react-router-dom'
+import axios from 'axios';
+import Dashboard from './components/pages/Dashboard';
+import Login from './components/pages/Login';
+import NoPageFound from './components/pages/NoPageFound';
 import './App.css';
-import {Switch, Route, Redirect} from 'react-router-dom';
-import Login from './components/pages/Login'
-import NoPageFound from './components/pages/NoPageFound'
 
-class App extends React.Component {
+
+class App extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			userName: null
+			username: null
 		}
 	}
 
-	handleChange = (event) => {
-		event.preventDefault();
-		this.setState({
-			userName: 'Bob'
-		});
+	// Use this to persist state. Check with the server and return username
+	getUserName = () => {
+		axios.get('/amiLoggedIn')
+		.then((res) => {
+			this.setState({username: res.data})
+		})
 	}
 
 	userLoggedIn = (username) => {
-		console.log("LOGGEED INN");
+		console.log("From App: Logged In");
 		this.setState({username: username})
 	}
-	
+
 	render() {
-		const loggedIn = this.state.userName;
+		const loggedIn = this.state.username;
 		return (
-			<div>
+			<Router>
 				<Switch>
-					<Route exact path='/' render={() => (<Redirect to="/login"/>)}/>
-					<Route path='/login' component={Login} />
+					<Route exact path='/' render={() => (
+						loggedIn ? (<Redirect to="/dashboard"/>) : (<Redirect to="/login"/>))}/>
+					<Route path='/login' render={() => (
+						loggedIn ? (<Redirect to="/dashboard"/>) : (<Login callback={this.userLoggedIn}/>))}/>
+					<Route path='/dashboard' component={Dashboard} />
 					<Route component={NoPageFound} />
 				</Switch>
-			</div>
+			</Router>		
 		)
-		// if (loggedIn) {
-		// 	return <div>User is {loggedIn}</div>
-		// } else {
-		// 	// return <Button color='yellow' onClick={this.handleChange}>Log In</Button>
-		// 	return <Route 
-		// 		to='/login'
-		// 		render={() => <Login callback={this.userLoggedIn} />}
-		// 	/>
-		// }
 	}
 }
 

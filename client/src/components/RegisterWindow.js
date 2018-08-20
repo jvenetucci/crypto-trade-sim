@@ -41,7 +41,7 @@ class RegisterWindow extends Component {
                                 iconPosition='left'
                         />}
                         header='Requirements'
-                        content='Basic Requirements'
+                        content='There are no requirements'
                         on='focus'
                         position='right center'
                     />
@@ -58,7 +58,7 @@ class RegisterWindow extends Component {
                                 iconPosition='left'
                         />}
                         header='Requirements'
-                        content='Basic Requirements'
+                        content='Also no requirements'
                         on='focus'
                         position='right center'
                     />

@@ -1,9 +1,10 @@
 import React from 'react';
+import { Header } from 'semantic-ui-react';
 
 const NoPageFound = () => {
     return (
         <div>
-            <h1>No Page Found</h1>
+            <Header as='h1'>No Page Found</Header>
         </div>
     );
 };
