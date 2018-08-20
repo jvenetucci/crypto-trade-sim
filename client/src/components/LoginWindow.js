@@ -1,21 +1,5 @@
 import React, { Component } from 'react';
-import {Form, Segment, Button, Container, Grid, GridColumn, Div} from 'semantic-ui-react';
-
-// const LoginWindow = () => {
-//     return (
-//         <div>
-            {/* <Form>
-                <Form.Group widths='equal'>
-                    <Form.Input fluid label="Username" placeholder="Enter Username" />
-                    <Form.Input fluid label="Password" placeholder="Enter Password" />
-                </Form.Group>
-            </Form> */}
-//         </div>
-//     );
-// };
-
-// export default LoginWindow;
-
+import {Form, Segment, Button} from 'semantic-ui-react';
 
 class LoginWindow extends Component {
     constructor(props) {
@@ -45,7 +29,7 @@ class LoginWindow extends Component {
         return (
             <div>
                 <Form>
-                <Segment raised>
+                {/* <Segment raised> */}
                         <Form.Input 
                             fluid label="Username" 
                             value={this.state.username}
@@ -76,7 +60,7 @@ class LoginWindow extends Component {
                             color='instagram'
                             fluid
                         />
-                </Segment>
+                {/* </Segment> */}
                 </Form>
             </div>
         );
