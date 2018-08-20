@@ -18,7 +18,7 @@ const Login = () => (
             </Header>
         </Container>
 
-        <Grid centered classname='Content'>
+        <Grid centered className='Content'>
             <Grid.Column width={8}>
                 <Segment raised>
                     <Tab panes={panes} />

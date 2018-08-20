@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import {Form, Button} from 'semantic-ui-react';
+import {Form, Button, Message} from 'semantic-ui-react';
+import axios from 'axios';
 
 class LoginWindow extends Component {
     constructor(props) {
@@ -7,7 +8,8 @@ class LoginWindow extends Component {
         this.state = {
             username: '',
             password: '',
-            showPassword: false
+            showPassword: false,
+            err: false
         }
     }
 
@@ -25,10 +27,38 @@ class LoginWindow extends Component {
         })
     }
 
+    login = () => {
+        axios.post('/login', {
+            username: this.state.username,
+            password: this.state.password
+        })
+        .then((res) => {
+            // this.props.callBack(this.state.username);
+        })
+        .catch((err) => {
+            this.setState({'err': true})
+        })
+    }
+
+    handleDismiss = (event, data) => {
+        this.setState({'err': false})
+    }
+
+
     render() {
+        let errMsg;
+        if (this.state.err) {
+            errMsg = <Message
+                        error
+                        header='Invalid Credentials'
+                        content='Invalid username/password'
+                        attached="top"
+                        onDismiss={this.handleDismiss}
+                    />
+        } else {errMsg = null}
         return (
             <div>
-                <Form>
+                <Form onSubmit={this.login}>
                     <Form.Input 
                         fluid label="Username" 
                         value={this.state.username}
@@ -60,6 +90,7 @@ class LoginWindow extends Component {
                         fluid
                     />
                 </Form>
+                {errMsg}
             </div>
         );
     }
