@@ -33,9 +33,10 @@ class LoginWindow extends Component {
             password: this.state.password
         })
         .then((res) => {
-            // this.props.callBack(this.state.username);
+            this.props.callback(this.state.username);
         })
         .catch((err) => {
+            console.log(err)
             this.setState({'err': true})
         })
     }
