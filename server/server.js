@@ -177,6 +177,7 @@ server.post('/register', (req, res) => {
  *  200 - Logged out, Client should redirect themselves.
  */
 server.get('/logout', function(req, res){
+    logger.info(req.user + " is logging out");
     req.logout();
     res.sendStatus(200);
 });
