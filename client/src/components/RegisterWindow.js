@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Form, Segment, Button} from 'semantic-ui-react';
+import {Form, Popup, Button} from 'semantic-ui-react';
 
 class RegisterWindow extends Component {
     constructor(props) {
@@ -30,36 +30,50 @@ class RegisterWindow extends Component {
             <div>
                 <Form>
                 {/* <Segment raised> */}
-                        <Form.Input 
-                            fluid label="Username" 
-                            value={this.state.username}
-                            onChange={this.handleChange}
-                            name="username"
-                            placeholder="Enter Username"
-                            icon='users'
-                            iconPosition='left'
-                        />
-                        <Form.Input
-                            fluid label="Password"
-                            type = {this.state.showPassword ? '' : 'password'}
-                            onChange={this.handleChange}
-                            name='password'
-                            value={this.state.password}
-                            placeholder="Enter Password"
-                            icon='lock'
-                            iconPosition='left'
-                        />
-                        <Form.Checkbox
-                            name="showPassword"
-                            label='Show Password'
-                            onChange={this.handleChecked}
-                        />
-                        <Button
-                            content='Register'
-                            type='submit'
-                            color='instagram'
-                            fluid
-                        />
+                    <Popup
+                        trigger={
+                            <Form.Input 
+                                fluid label="Username" 
+                                value={this.state.username}
+                                onChange={this.handleChange}
+                                name="username"
+                                placeholder="Enter Username"
+                                icon='users'
+                                iconPosition='left'
+                        />}
+                        header='Requirements'
+                        content='Basic Requirements'
+                        on='focus'
+                        position='right center'
+                    />
+                    <Popup
+                        trigger={
+                            <Form.Input
+                                fluid label="Password"
+                                type = {this.state.showPassword ? '' : 'password'}
+                                onChange={this.handleChange}
+                                name='password'
+                                value={this.state.password}
+                                placeholder="Enter Password"
+                                icon='lock'
+                                iconPosition='left'
+                        />}
+                        header='Requirements'
+                        content='Basic Requirements'
+                        on='focus'
+                        position='right center'
+                    />
+                    <Form.Checkbox
+                        name="showPassword"
+                        label='Show Password'
+                        onChange={this.handleChecked}
+                    />
+                    <Button
+                        content='Register'
+                        type='submit'
+                        color='instagram'
+                        fluid
+                    />
                 {/* </Segment> */}
                 </Form>
             </div>
