@@ -37,7 +37,7 @@ class App extends Component {
 					<Route path='/login' render={() => (
 						loggedIn ? (<Redirect to="/dashboard"/>) : (<Login callback={this.userLoggedIn}/>))}/>
 					<Route path='/dashboard' render={() => (
-						loggedIn ? (<Dashboard logout={this.logOut}/>) : (<Redirect to="/login" />))} />
+						loggedIn ? (<Dashboard username={loggedIn} logout={this.logOut}/>) : (<Redirect to="/login" />))} />
 					<Route component={NoPageFound} />
 				</Switch>
 			</Router>		

@@ -21,7 +21,7 @@ const Dashboard = (props) => (
         >
             <Menu.Item as={NavLink} to='/dashboard/profile'>
                 <Icon name='user circle' />
-                username
+                {props.username}
             </Menu.Item>
             <Menu.Item as={NavLink} to='/dashboard/market'>
                 <Icon name='bitcoin' />
