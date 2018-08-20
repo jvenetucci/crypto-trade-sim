@@ -172,6 +172,16 @@ server.post('/register', (req, res) => {
 });
 
 /**
+ * Logs a user out and redirects to login.
+ * Response:
+ *  302 - Redirected to login
+ */
+server.get('/logout', function(req, res){
+    req.logout();
+    res.redirect('http://localhost:3000/login');
+});
+
+/**
  * Buy an amount of cryptocurrency for USD. This is a protected endpoint
  * Request Body:
  *  Content-Type: application/json
