@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Tab, Container, Divider, Grid, Header, Image, Menu, Segment } from 'semantic-ui-react'
+import { Tab, Container, Grid, Header, Segment } from 'semantic-ui-react'
 import LoginWindow from "./../LoginWindow";
 import RegisterWindow from "./../RegisterWindow";
 import '../../styles/LoginPage.css';

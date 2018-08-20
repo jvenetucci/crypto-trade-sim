@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Form, Segment, Button} from 'semantic-ui-react';
+import {Form, Button} from 'semantic-ui-react';
 
 class LoginWindow extends Component {
     constructor(props) {
@@ -29,38 +29,36 @@ class LoginWindow extends Component {
         return (
             <div>
                 <Form>
-                {/* <Segment raised> */}
-                        <Form.Input 
-                            fluid label="Username" 
-                            value={this.state.username}
-                            onChange={this.handleChange}
-                            name="username"
-                            placeholder="Enter Username"
-                            icon='users'
-                            iconPosition='left'
-                        />
-                        <Form.Input
-                            fluid label="Password"
-                            type = {this.state.showPassword ? '' : 'password'}
-                            onChange={this.handleChange}
-                            name='password'
-                            value={this.state.password}
-                            placeholder="Enter Password"
-                            icon='lock'
-                            iconPosition='left'
-                        />
-                        <Form.Checkbox
-                            name="showPassword"
-                            label='Show Password'
-                            onChange={this.handleChecked}
-                        />
-                        <Button
-                            content='Log In'
-                            type='submit'
-                            color='instagram'
-                            fluid
-                        />
-                {/* </Segment> */}
+                    <Form.Input 
+                        fluid label="Username" 
+                        value={this.state.username}
+                        onChange={this.handleChange}
+                        name="username"
+                        placeholder="Enter Username"
+                        icon='users'
+                        iconPosition='left'
+                    />
+                    <Form.Input
+                        fluid label="Password"
+                        type = {this.state.showPassword ? '' : 'password'}
+                        onChange={this.handleChange}
+                        name='password'
+                        value={this.state.password}
+                        placeholder="Enter Password"
+                        icon='lock'
+                        iconPosition='left'
+                    />
+                    <Form.Checkbox
+                        name="showPassword"
+                        label='Show Password'
+                        onChange={this.handleChecked}
+                    />
+                    <Button
+                        content='Log In'
+                        type='submit'
+                        color='instagram'
+                        fluid
+                    />
                 </Form>
             </div>
         );

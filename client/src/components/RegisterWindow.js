@@ -29,7 +29,6 @@ class RegisterWindow extends Component {
         return (
             <div>
                 <Form>
-                {/* <Segment raised> */}
                     <Popup
                         trigger={
                             <Form.Input 
@@ -74,7 +73,6 @@ class RegisterWindow extends Component {
                         color='instagram'
                         fluid
                     />
-                {/* </Segment> */}
                 </Form>
             </div>
         );

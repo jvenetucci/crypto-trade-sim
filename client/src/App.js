@@ -2,9 +2,6 @@ import React, { Component } from 'react';
 import './App.css';
 import {Link, Route, BrowserRouter as Router} from 'react-router-dom';
 import Login from './components/pages/Login'
-// import { Button } from 'semantic-ui-react';
-import { Button, Form, Grid, Header, Image, Message, Segment } from 'semantic-ui-react'
-
 
 class App extends React.Component {
 	constructor(props) {
