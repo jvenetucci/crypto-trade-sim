@@ -11,7 +11,7 @@ class App extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			username: null
+			username: sessionStorage.getItem("username")
 		}
 	}
 
@@ -25,6 +25,7 @@ class App extends Component {
 
 	userLoggedIn = (username) => {
 		console.log("From App: Logged In");
+		sessionStorage.setItem("username", username);
 		this.setState({username: username})
 	}
 
