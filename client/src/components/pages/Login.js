@@ -10,7 +10,7 @@ const Login = (props) => {
     console.log(callback)
     const panes = [
         {menuItem: 'Login', render: () => <Tab.Pane><LoginWindow callback={callback} /></Tab.Pane>},
-        {menuItem: 'Register', render: () => <Tab.Pane><RegisterWindow /></Tab.Pane>},
+        {menuItem: 'Register', render: () => <Tab.Pane><RegisterWindow callback={callback}/></Tab.Pane>},
     ]
 
     return (
