@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import {BrowserRouter as Router, Route, Redirect, Switch} from 'react-router-dom'
-import axios from 'axios';
 import Dashboard from './components/pages/Dashboard';
 import Login from './components/pages/Login';
 import NoPageFound from './components/pages/NoPageFound';
@@ -13,14 +12,6 @@ class App extends Component {
 		this.state = {
 			username: sessionStorage.getItem("username")
 		}
-	}
-
-	// Use this to persist state. Check with the server and return username
-	getUserName = () => {
-		axios.get('/amiLoggedIn')
-		.then((res) => {
-			this.setState({username: res.data})
-		})
 	}
 
 	userLoggedIn = (username) => {
@@ -38,7 +29,8 @@ class App extends Component {
 						loggedIn ? (<Redirect to="/dashboard"/>) : (<Redirect to="/login"/>))}/>
 					<Route path='/login' render={() => (
 						loggedIn ? (<Redirect to="/dashboard"/>) : (<Login callback={this.userLoggedIn}/>))}/>
-					<Route path='/dashboard' component={Dashboard} />
+					<Route path='/dashboard' render={() => (
+						loggedIn ? (<Dashboard />) : (<Redirect to="/login" />))} />
 					<Route component={NoPageFound} />
 				</Switch>
 			</Router>		
