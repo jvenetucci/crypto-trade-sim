@@ -8,7 +8,7 @@ import Market from './../pages/Market';
 import History from './../pages/History';
 
 
-const Dashboard = () => (
+const Dashboard = (props) => (
     <BrowserRouter>
     <Sidebar.Pushable as={Segment}>
         <Sidebar as={Menu} 
@@ -30,6 +30,10 @@ const Dashboard = () => (
             <Menu.Item as={NavLink} to='/dashboard/history'>
                 <Icon name='table' />
                 History
+            </Menu.Item>
+            <Menu.Item as='a' onClick={props.logout}>
+                <Icon name='log out' />
+                Logout
             </Menu.Item>
         </Sidebar>
 

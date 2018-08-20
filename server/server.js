@@ -172,13 +172,13 @@ server.post('/register', (req, res) => {
 });
 
 /**
- * Logs a user out and redirects to login.
+ * Logs a user out.
  * Response:
- *  302 - Redirected to login
+ *  200 - Logged out, Client should redirect themselves.
  */
 server.get('/logout', function(req, res){
     req.logout();
-    res.redirect('http://localhost:3000/login');
+    res.sendStatus(200);
 });
 
 /**

@@ -3,6 +3,7 @@ import {BrowserRouter as Router, Route, Redirect, Switch} from 'react-router-dom
 import Dashboard from './components/pages/Dashboard';
 import Login from './components/pages/Login';
 import NoPageFound from './components/pages/NoPageFound';
+import axios from 'axios';
 import './App.css';
 
 
@@ -20,6 +21,12 @@ class App extends Component {
 		this.setState({username: username})
 	}
 
+	logOut = () => {
+		sessionStorage.removeItem('username');
+		axios.get('/logout')
+		.then(this.setState({username: null}));
+	}
+
 	render() {
 		const loggedIn = this.state.username;
 		return (
@@ -30,7 +37,7 @@ class App extends Component {
 					<Route path='/login' render={() => (
 						loggedIn ? (<Redirect to="/dashboard"/>) : (<Login callback={this.userLoggedIn}/>))}/>
 					<Route path='/dashboard' render={() => (
-						loggedIn ? (<Dashboard />) : (<Redirect to="/login" />))} />
+						loggedIn ? (<Dashboard logout={this.logOut}/>) : (<Redirect to="/login" />))} />
 					<Route component={NoPageFound} />
 				</Switch>
 			</Router>		
