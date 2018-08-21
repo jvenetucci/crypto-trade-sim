@@ -9,6 +9,7 @@ const crypto = require('crypto');
 const sqlite3 = require('sqlite3');
 const morgan = require('morgan');
 const winston = require('winston');
+const axios = require('axios');
 
 const logFormat = winston.format.printf(info => {
     return info.timestamp +  " [" + info.level + "]: " + info.message;
@@ -276,7 +277,18 @@ server.get('/holdings', isUserLoggedIn, (req, res) => {
             logger.error(err.message);
             res.status(500).send("Something happened to the DB, check server logs...");
         } else {
-            res.json(row);
+            var query = ''
+            row.forEach((holding) => {
+                query += holding.currency + ','
+            })
+            var queryString = 'https://min-api.cryptocompare.com/data/pricemulti?fsyms=' + query + '&tsyms=USD';
+            axios.get(queryString)
+            .then((response) => {
+                row.forEach((holding) => {
+                    holding.price = response.data[holding.currency]['USD'] * holding.quantity
+                })
+                res.json(row);
+            })
         }
     })
 });
