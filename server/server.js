@@ -294,6 +294,25 @@ server.get('/holdings', isUserLoggedIn, (req, res) => {
 });
 
 /**
+ * Retrieve coin info from API
+ * Response:
+ *  200 - Coin in response body
+ */
+server.get('/coin', isUserLoggedIn, (req, res) => {
+    if (!req.query.coin) { 
+        res.status(400).send("Missing required fields in body");
+    } else {
+        logger.info(req.user + " is asking for the price of " + req.query.coin);
+        var queryString = 'https://min-api.cryptocompare.com/data/price?fsym=' + req.query.coin + '&tsyms=USD'
+        axios.get(queryString)
+        .then((response) => {
+            res.json(response.data);
+        })
+    }
+    // console.log(req.query.coin);
+});
+
+/**
  * Retrieve the transaction history of a user. Will return an empty array if there are no transactions, or the user does not exist.
  * Uses the username stored in the current session. This is a protected endpoint.
  * Response:
