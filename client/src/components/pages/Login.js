@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tab, Container, Grid, Header, Segment } from 'semantic-ui-react'
+import { Tab, Container, Grid, Header, Segment, Button, Icon } from 'semantic-ui-react'
 import LoginWindow from "./../LoginWindow";
 import RegisterWindow from "./../RegisterWindow";
 import '../../styles/LoginPage.css';
@@ -29,6 +29,28 @@ const Login = (props) => {
                     </Segment>
                 </Grid.Column>
             </Grid>
+
+            <Grid centered className='Content'>
+                <Segment raised>
+                <Grid.Row>
+                    <Grid.Column textAlign='center' width={8}>
+                        <Header as="h3">Created by Joseph Venetucci</Header>
+                    </Grid.Column>
+                </Grid.Row>
+                <Grid.Row>
+                    <Grid.Column textAlign='center' width={8}>
+                        <Button as='a' href='https://github.com/jvenetucci/crypto-trade-sim' color='instagram' icon>
+                            <Icon name='github' />
+                        </Button>
+                        <Button as='a' href='https://www.linkedin.com/in/joseph-venetucci/' color='instagram' icon>
+                            <Icon name='linkedin' />
+                        </Button>                    
+                    </Grid.Column>
+                </Grid.Row>
+                </Segment>
+            </Grid>
+
+            
         </div>
     );
 }
