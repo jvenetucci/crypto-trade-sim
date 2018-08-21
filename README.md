@@ -20,13 +20,12 @@ Live prices are retrieved from an API, allowing the value of your portfolio and 
 ---
 
 ## Features & Requirements
-- [ ] Retrieve & display current Cryptocurrency rates.
-    - [ ] Display history of prices through charts.
-- [ ] User accounts & registration.
-    - [ ] Persistent accounts stored in DB
-- [ ] Users can exchange USD to coins of their choosing.
-    - [ ] Using real-world pricing.
-- [ ] Users can view their crypto holdings and portfolio value.
+- [x] Retrieve & display current Cryptocurrency rates.
+- [x] User accounts & registration.
+    - [x] Persistent accounts stored in DB
+- [x] Users can exchange USD to coins of their choosing.
+    - [x] Using real-world pricing.
+- [x] Users can view their crypto holdings and portfolio value.
 - [ ] Users can see a history of their portfolio value.
 - [ ] Users can sell holdings and buy other Cryptocurrencies.
 - [ ] Leaderboards
