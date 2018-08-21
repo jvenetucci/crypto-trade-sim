@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Header, Icon, Container, Grid, Segment, Divider, Table, Menu, Label } from 'semantic-ui-react'
+import { Header, Icon, Container, Grid, Segment, Divider, Table,} from 'semantic-ui-react'
 import HoldingsRow from '../HoldingsRow'
 import axios from 'axios';
 

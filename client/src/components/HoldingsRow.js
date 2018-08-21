@@ -2,9 +2,6 @@ import React from 'react';
 import {Table} from 'semantic-ui-react'
 
 const HoldingsRow = (props) => {
-    let value;
-    if (props.currency === 'USD') {value = props.quantity}else {value=100};
-
     return (
         <Table.Row>
             <Table.Cell>{props.currency}</Table.Cell>
