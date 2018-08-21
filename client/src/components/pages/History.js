@@ -51,7 +51,7 @@ class History extends Component {
                             </Grid.Column>
                             <Grid.Column width={12}>
                                 <Header color='blue' as='h2' textAlign='right'>
-                                    5
+                                    {this.state.history.length}
                                 </Header>
                             </Grid.Column>
                         </Grid>
