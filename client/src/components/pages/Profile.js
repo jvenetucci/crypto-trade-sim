@@ -54,7 +54,13 @@ class Profile extends Component {
                             </Grid.Column>
                             <Grid.Column width={12}>
                                 <Header color='green' as='h2' textAlign='right'>
-                                    ${this.state.currentVal}
+                                    {(this.state.currentVal).toLocaleString(
+                                        'en-us',
+                                        {
+                                            style: 'currency',
+                                            currency: 'USD'
+                                        }
+                                    )}
                                 </Header>
                             </Grid.Column>
                         </Grid>
